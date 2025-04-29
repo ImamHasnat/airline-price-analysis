@@ -10,7 +10,7 @@ The dataset can be found [here](https://drive.google.com/uc?export=download&id=1
 2. Open and run the `flight.Rmd` file in RStudio.
 
 
-### What I Learned
+### What I Learned:
 - **Data Preprocessing**: Handling missing values and outliers.
 - **Label Encoding**: Converting categorical data into numerical format.
 - **Outlier Detection**: Using the IQR method to identify and cap outliers.
