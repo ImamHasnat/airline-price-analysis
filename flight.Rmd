@@ -1,0 +1,274 @@
+---
+title: "Group 13"
+output: html_document
+date: "2025-04-28"
+---
+
+
+
+```{r}
+# Read CSV from a URL
+
+# Import the dataset from Google Drive
+url <- "https://drive.google.com/uc?export=download&id=1GGyAC22xo7WxOL05hAPZDfPSE8iucDXv"
+df <- read.csv(url, na.strings = c("NA", "", "NULL"))
+
+# View the first few rows of the dataframe to check the import
+head(df)
+```
+
+```{r}
+str(df)
+```
+##Data Exploration
+
+```{r}
+summary(df)
+```
+
+##Handle missing values
+```{r}
+is.na(df)
+```
+
+
+```{r}
+colSums(is.na(df))
+```
+```{r}
+# Replace missing values in 'fight_duration_hours' with mean
+df$flight_duration_hours[is.na(df$flight_duration_hours)] <- mean(df$flight_duration_hours, na.rm = TRUE)
+
+# Replace missing values in 'airline_rate' with mean
+df$airline_rate[is.na(df$airline_rate)] <- mean(df$airline_rate, na.rm = TRUE)
+
+# Print the specific columns after imputation
+print(df[c("flight_duration_hours", "airline_rate")])
+
+```
+```{r}
+# Replace missing values in 'airline' with mode
+df$airline[is.na(df$airline)] <- 
+  names(sort(table(df$airline), decreasing = TRUE))[1]
+
+# Replace missing values in 'departure_city' with mode
+df$departure_city[is.na(df$departure_city)] <- 
+  names(sort(table(df$departure_city), decreasing = TRUE))[1]
+
+# Replace missing values in 'arrival_city' with mode
+df$arrival_city[is.na(df$arrival_city)] <- 
+  names(sort(table(df$arrival_city), decreasing = TRUE))[1]
+
+# Print only the categorical columns
+print(df[c("airline", "departure_city", "arrival_city")])
+```
+```{r}
+# Remove rows where 'price' is NA
+df <- df[!is.na(df$price), ]
+
+# Print only the 'price' column
+print(df[c("price")])
+
+```
+```{r}
+
+
+# Print the updated dataset
+print(df)
+
+
+```
+```{r}
+# Check for missing values in the final dataset (df)
+missing_values <- sum(is.na(df))
+
+# Print the result
+if(missing_values > 0) {
+  cat("There are", missing_values, "missing values in the dataset.\n")
+} else {
+  cat("No missing values in the dataset.\n")
+}
+
+```
+##Data exploration
+Univariate Analysis
+
+Histogram
+
+```{r}
+# Plot histograms for 'flight_duration_hours' and 'airline_rate'
+par(mfrow = c(1, 2))  # Set up the plot area to show 2 histograms side by side
+
+# Histogram for flight_duration_hours
+hist(df$flight_duration_hours, main = "Flight Duration Hours", 
+     xlab = "Flight Duration (hours)", col = "skyblue", 
+     border = "black", breaks = 20)
+
+# Histogram for airline_rate
+hist(df$airline_rate, main = "Airline Rating", 
+     xlab = "Airline Rating", col = "orange", 
+     border = "black", breaks = 5)
+```
+Bar plot
+
+```{r}
+# --- Chunk 3: Bar Plots for Categorical Variables ---
+library(ggplot2)
+
+# Bar Plot of Airline Name
+ggplot(df, aes(x = airline)) +
+  geom_bar(fill = "skyblue") +
+  ggtitle("Count of Flights by Airline Name") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Bar Plot of Departure City
+ggplot(df, aes(x = departure_city)) +
+  geom_bar(fill = "orange") +
+  ggtitle("Count of Flights by Departure City") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Bar Plot of Arrival City
+ggplot(df, aes(x = arrival_city)) +
+  geom_bar(fill = "lightpink") +
+  ggtitle("Count of Flights by Arrival City") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Bar Plot of Price Category
+ggplot(df, aes(x = price)) +
+  geom_bar(fill = "violet") +
+  ggtitle("Count of Flights by Price Category") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+```{r}
+# Set layout to 1 row and 2 columns
+par(mfrow = c(1, 2))
+
+# Box plot for flight_duration_hours
+boxplot(df$flight_duration_hours,
+        main = "Box Plot of Flight Duration (Hours)",
+        col = "skyblue")
+
+# Box plot for airline_rate
+boxplot(df$airline_rate,
+        main = "Box Plot of Airline Rate",
+        col = "lightgreen")
+
+
+
+```
+Multivariate analysis
+
+```{r}
+# Scatter Plot: flight_duration_hours vs airline_rate colored by airline
+library(ggplot2)
+
+ggplot(df, aes(x = flight_duration_hours, y = airline_rate, color = airline)) +
+  geom_point(size = 2) +
+  labs(title = "Scatter Plot of Flight Duration vs Airline Rate",
+       x = "Flight Duration (Hours)",
+       y = "Airline Rate") +
+  theme_minimal()
+
+```
+```{r}
+# Load the library
+library(corrplot)
+
+# Select numeric columns
+numeric_data <- df[, c("flight_duration_hours", "airline_rate")]
+
+
+# Create correlation matrix
+cor_matrix <- cor(numeric_data)
+
+# Print the correlation matrix
+print(cor_matrix)
+
+
+```
+```{r}
+# Load the library
+library(GGally)
+
+
+# Create the pair plot
+ggpairs(df, columns = c("flight_duration_hours", "airline_rate"))
+
+
+```
+## Data type conversion
+
+
+```{r}
+# Label encoding for 'airline' (Nominal)
+df$airline_encoded <- as.integer(factor(df$airline))
+
+# Label encoding for 'departure_city' (Nominal)
+df$departure_city_encoded <- as.integer(factor(df$departure_city))
+
+# Label encoding for 'arrival_city' (Nominal)
+df$arrival_city_encoded <- as.integer(factor(df$arrival_city))
+
+# Label encoding for 'price' (Ordinal)
+df$price_encoded <- as.integer(factor(df$price, levels = c("Cheap", "Moderate", "Expensive")))
+
+# Print the encoded columns to verify
+print(df[c("airline_encoded", "departure_city_encoded", "arrival_city_encoded", "price_encoded")])
+
+
+```
+
+##Outliers detection
+```{r}
+# Function to detect outliers using IQR and return bounds
+detect_outliers <- function(x) {
+  Q1 <- quantile(x, 0.25, na.rm = TRUE)
+  Q3 <- quantile(x, 0.75, na.rm = TRUE)
+  IQR_value <- Q3 - Q1
+  lower_bound <- Q1 - 1.5 * IQR_value
+  upper_bound <- Q3 + 1.5 * IQR_value
+  
+  # Return a list with outlier detection and bounds
+  return(list(outliers = x < lower_bound | x > upper_bound,
+              lower_bound = lower_bound,
+              upper_bound = upper_bound))
+}
+
+# Detect outliers for 'flight_duration_hours' and 'airline_rate'
+flight_duration_outliers <- detect_outliers(df$flight_duration_hours)
+airline_rate_outliers <- detect_outliers(df$airline_rate)
+
+# Count the number of outliers for 'flight_duration_hours' and 'airline_rate'
+outliers_flight_duration_count <- sum(flight_duration_outliers$outliers)
+outliers_airline_rate_count <- sum(airline_rate_outliers$outliers)
+
+# Print the count of outliers in both columns
+print(paste("Number of outliers in flight_duration_hours: ", outliers_flight_duration_count))
+print(paste("Number of outliers in airline_rate: ", outliers_airline_rate_count))
+
+
+```
+```{r}
+# Capping outliers for 'flight_duration_hours'
+df$flight_duration_hours[df$flight_duration_hours < flight_duration_outliers$lower_bound] <- flight_duration_outliers$lower_bound
+df$flight_duration_hours[df$flight_duration_hours > flight_duration_outliers$upper_bound] <- flight_duration_outliers$upper_bound
+
+# Print outliers for 'flight_duration_hours' column after capping
+print(df$flight_duration_hours[flight_duration_outliers$outliers])
+
+```
+##Scaling
+```{r}
+# Scale the numerical columns: 'flight_duration_hours' and 'airline_rate'
+df$flight_duration_hours_scaled <- scale(df$flight_duration_hours)
+df$airline_rate_scaled <- scale(df$airline_rate)
+
+# Print the first few rows of the scaled data
+print(df[, c("flight_duration_hours_scaled", "airline_rate_scaled")])
+
+
+```
+
+
