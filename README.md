@@ -7,7 +7,7 @@ The dataset can be found [here](https://drive.google.com/uc?export=download&id=1
 1. Clone the repository:  
    `https://github.com/ImamHasnat/airline-price-analysis.git`
 
-2. Open and run the `flight.Rmd` file in RStudio
+2. Open and run the `flight.Rmd` file in RStudio.
 
 
 ### What I Learned:
