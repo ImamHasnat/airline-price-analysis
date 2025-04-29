@@ -5,7 +5,7 @@ The dataset can be found [here](https://drive.google.com/uc?export=download&id=1
 
 ## How to Run
 1. Clone the repository:  
-   `git clone https://github.com/ImamHasnat/Technology-and-stress-data-analysis.git`
+   `https://github.com/ImamHasnat/airline-price-analysis.git`
 
 2. Open and run the `noteebook.Rmd` file in RStudio.
 
